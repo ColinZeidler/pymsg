@@ -9,6 +9,8 @@ HOST = 'localhost'
 def main():
 	print "Hello world"
 	connect(HOST)
+	print conns.sock.getsockname()
+	conns.sock.send("/dc")
 	conns.sock.close()
 
 def connect(server):
