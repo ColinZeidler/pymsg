@@ -16,7 +16,7 @@ def main():
 		sleep(2)
 		lock.acquire()
 		print "clients ",
-		print clients.values()
+		print conns.clients.values()
 		lock.release()
 
 	#end of server
@@ -36,7 +36,7 @@ def accept_cons():
 		#should allow checking for data, and continuing if none
 		#preventing concurrent access
 		lock.acquire()
-		clients[conn] = addr
+		conns.clients[conn] = addr
 		lock.release()
 
 def send(sender, reciever, msg):
@@ -46,7 +46,7 @@ def msg_control():
 	while True:
 		sleep(0.05)
 		lock.acquire()
-		for con in clients.keys():
+		for con in conns.clients.keys():
 			try:
 				msg = con.recv(128)
 			except:
@@ -54,23 +54,22 @@ def msg_control():
 			if msg[:3] == "/dc":
 				#remove the client from the dict
 				print "disconnecting client"
-				for person in clients.keys():
-					send(conns.SERVER_STR, person, clients.get(con)[0] + " Disconnected")
+				for person in conns.clients.keys():
+					send(conns.SERVER_STR, person, conns.clients.get(con)[0] + " Disconnected")
 				con.close()
-				del clients[con]
+				del conns.clients[con]
 				#do not want to broadcast the /dc command so continue
 				continue
 			#loop through all clients and send the message out
-			for person in clients.keys():
+			for person in conns.clients.keys():
 				if person == con:
 					#do not send the message back to the sender
 					continue
-				send(clients.get(con)[0], person, msg)
+				send(conns.clients.get(con)[0], person, msg)
 			
 		lock.release()
 
 if __name__ == '__main__':
 	#do the normal stuff
 	lock = Lock()
-	clients = {}
 	main()
