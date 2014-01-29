@@ -54,6 +54,9 @@ def msg_control():
 			if msg[:3] == "/dc":
 				#remove the client from the dict
 				print "disconnecting client"
+				for person in clients.keys():
+					send(conns.sock.getsockname()[0], 
+						person, clients.get(con)[0] + " Disconnected")
 				con.close()
 				del clients[con]
 				#do not want to broadcast the /dc command so continue
