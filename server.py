@@ -57,12 +57,12 @@ def msg_control():
 				print "disconnecting client"
 				con.close()
 				del clients[con]
+				#do not want to broadcast the /dc command so continue
 				continue
-			else:
-				#loop through all clients and send the message out
-				#for person in client.keys():
-				
-				pass
+			#loop through all clients and send the message out
+			for person in clients.keys():
+				send(clients.get(con), person, msg)
+			
 		lock.release()
 
 if __name__ == '__main__':
