@@ -51,12 +51,13 @@ def msg_control():
 				msg = con.recv(128)
 			except:
 				print "Err: no data to read"
-				lock.release()
 				continue
 			if msg[:3] == "/dc":
 				#remove the client from the dict
 				print "disconnecting client"
+				con.close()
 				del clients[con]
+				continue
 			else:
 				#loop through all clients and send the message out
 				#for person in client.keys():
