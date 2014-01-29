@@ -33,6 +33,9 @@ def send(msg):
 def listen():
 	while True:
 		msg = conns.sock.recv(128)
+		if msg[:3] == "/dc":
+			conns.sock.close()
+			sys.exit(0)
 		print msg
 
 if __name__ == "__main__":

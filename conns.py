@@ -5,3 +5,8 @@ HOST = ''
 PORT = 60000
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 SERVER_STR = "Server"
+PASS = "goaway"
+clients = {}
+
+def send(sender, receiver, msg):
+	receiver.send(sender + ": " + msg)

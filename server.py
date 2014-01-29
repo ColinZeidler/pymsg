@@ -1,12 +1,12 @@
 #author Colin Zeidler
 from time import sleep
 from threading import Thread, Lock
-import socket
-import conns
+import socket, sys
+import conns, messages
 
 def main():
 	print "Starting server"
-	print clients
+	print conns.clients
 	print conns.PORT
 
 	Thread(target=accept_cons).start()
@@ -16,7 +16,7 @@ def main():
 		sleep(2)
 		lock.acquire()
 		print "clients ",
-		print clients.values()
+		print conns.clients.values()
 		lock.release()
 
 	#end of server
@@ -25,52 +25,37 @@ def main():
 #accepts new connections and adds them to the server
 def accept_cons():
 	print "Started accepting"
-	conns.sock.bind((conns.HOST, conns.PORT))
+	try:
+		conns.sock.bind((conns.HOST, conns.PORT))
+	except:
+		print "Unable to bind socket"
+		sys.exit(0)
 	while True: #change this so that the program can exit cleanly
 		conns.sock.listen(1)
 		conn, addr = conns.sock.accept()
 		print "Connected to ", addr
-		send(conns.SERVER_STR, conn, "Welcome")
+		conns.send(conns.SERVER_STR, conn, "Welcome")
 
 		conn.setblocking(0) #set the socket to non blocking
 		#should allow checking for data, and continuing if none
 		#preventing concurrent access
 		lock.acquire()
-		clients[conn] = addr
+		conns.clients[conn] = addr
 		lock.release()
-
-def send(sender, reciever, msg):
-	reciever.send(sender + ": " + msg)
 
 def msg_control():
 	while True:
 		sleep(0.05)
 		lock.acquire()
-		for con in clients.keys():
+		for con in conns.clients.keys():
 			try:
 				msg = con.recv(128)
 			except:
 				continue
-			if msg[:3] == "/dc":
-				#remove the client from the dict
-				print "disconnecting client"
-				for person in clients.keys():
-					send(conns.SERVER_STR, person, clients.get(con)[0] + " Disconnected")
-				con.close()
-				del clients[con]
-				#do not want to broadcast the /dc command so continue
-				continue
-			#loop through all clients and send the message out
-			for person in clients.keys():
-				if person == con:
-					#do not send the message back to the sender
-					continue
-				send(clients.get(con)[0], person, msg)
-			
+			messages.parse_msg(msg, con)
 		lock.release()
 
 if __name__ == '__main__':
 	#do the normal stuff
 	lock = Lock()
-	clients = {}
 	main()
