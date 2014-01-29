@@ -20,17 +20,19 @@ def parse_msg(msg, con):
 			join(strings[1])
 		elif cmd == "/leave":
 			leave(strings[1])
+		elif cmd == "/setnick":
+			set_nick(strings[1], con)
 		elif cmd == "/to":
 			pass
 	else: #msg does not contain a command
 		for person in conns.clients.keys():
 			if person == con:
 				continue
-			conns.send(conns.clients.get(con)[0], person, msg)
+			conns.send(conns.nicks.get(con)[0], person, msg)
 
 def server_dc(msg, con):
 	print "disconnecting client"
-	broadcast_all(conns.SERVER_STR, conns.clients.get(con)[0] + " Disconnected")
+	broadcast_all(conns.SERVER_STR, conns.nicks.get(con)[0] + " Disconnected")
 	con.close()
 	del conns.clients[con]
 
@@ -48,6 +50,10 @@ def leave(room):
 
 def to(room, msg):
 	pass
+
+def set_nick(name, con):
+	conns.nicks[con] = name
+	print "set nickname to:", name
 
 
 def broadcast_all(sender, msg):
