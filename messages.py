@@ -35,9 +35,6 @@ def server_dc(msg, con):
 	con.close()
 	del conns.clients[con]
 
-def client_dc(msg):
-	pass
-
 def stop(passwd):
 	pass
 
