@@ -1,5 +1,6 @@
 import conns
 import socket
+
 commands = 	{'/dc':2,   #disconnect client from server,	/dc {reason/msg}
 			'/stop':2,  #tell server to stop running,		/stop {passwd}
 			'/join':2,  #join given channel,				/join {channel}
@@ -30,11 +31,9 @@ def parse_msg(msg, con):
 def server_dc(msg, con):
 	print "disconnecting client"
 	for person in conns.clients.keys():
-		conns.send(conns.SERVER_STR, person,
-					conns.clients.get(con)[0] + " Disconnected")
-		con.close()
-		del conns.clients[con]
-	pass
+		conns.send(conns.SERVER_STR, person, conns.clients.get(con)[0] + " Disconnected")
+	con.close()
+	del conns.clients[con]
 
 def client_dc(msg):
 	pass
