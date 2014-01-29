@@ -41,6 +41,7 @@ def accept_cons():
 		#preventing concurrent access
 		lock.acquire()
 		conns.clients[conn] = addr
+		conns.nicks[conn] = addr[0]
 		lock.release()
 
 def msg_control():
@@ -53,6 +54,7 @@ def msg_control():
 			except:
 				continue
 			messages.parse_msg(msg, con)
+#			send(nicks.get(con), person, msg)
 		lock.release()
 
 if __name__ == '__main__':
