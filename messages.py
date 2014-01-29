@@ -1,3 +1,5 @@
+import conns
+import socket
 commands = 	{'/dc':2,   #disconnect client from server,	/dc {reason/msg}
 			'/stop':2,  #tell server to stop running,		/stop {passwd}
 			'/join':2,  #join given channel,				/join {channel}
@@ -8,13 +10,27 @@ hasMsg = ['/dc', '/to']
 def parse_msg(msg):
 	strings = msg.split(" ")
 	cmd = strings[0]
-	if commands.get(cmd) < len(strings) and cmd in hasMsg:
-		msg = " ".join(strings[commands.get(cmd)-1:])
-	else:
-		msg = strings[-1:]
-	print strings[:commands.get(cmd)-1], msg
+	if cmd in commands:
+		if cmd == "/dc":
+			server_dc(" ".join(strings[commands.get(cmd):]))
+		elif cmd == "/stop":
+			pass
+		elif cmd == "/join":
+			pass
+		elif cmd == "/leave":
+			pass
+		elif cmd == "/to":
+			pass
+	else: #msg does not contain a command
+		conns.send(msg)
 
 def server_dc(msg):
+	print "disconnecting client"
+	for person in conns.clients.keys():
+		conns.send(conns.SERVER_STR, person,
+					conns.clients.get(con)[0] + " Disconnected")
+		con.close()
+		del conns.clients[con]
 	pass
 
 def client_dc(msg):
