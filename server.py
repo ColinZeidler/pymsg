@@ -54,7 +54,6 @@ def msg_control():
 			except:
 				continue
 			messages.parse_msg(msg, con)
-#			send(nicks.get(con), person, msg)
 		lock.release()
 
 if __name__ == '__main__':
