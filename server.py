@@ -60,6 +60,9 @@ def msg_control():
 				continue
 			#loop through all clients and send the message out
 			for person in clients.keys():
+				if person == con:
+					#do not send the message back to the sender
+					continue
 				send(clients.get(con)[0], person, msg)
 			
 		lock.release()
