@@ -30,6 +30,9 @@ def accept_cons():
 		conn, addr = conns.sock.accept()
 		print "Connected to ", addr
 		send(conns.sock, conn, "Welcome")
+
+		conn.setblocking(0) #set the socket to non blocking
+		#should allow checking for data, and continuing if none
 		#preventing concurrent access
 		lock.acquire()
 		clients[conn] = addr
