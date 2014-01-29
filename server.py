@@ -30,7 +30,7 @@ def accept_cons():
 		conns.sock.listen(1)
 		conn, addr = conns.sock.accept()
 		print "Connected to ", addr
-		send(conns.SERVER_STR, conn, "Welcome")
+		conns.send(conns.SERVER_STR, conn, "Welcome")
 
 		conn.setblocking(0) #set the socket to non blocking
 		#should allow checking for data, and continuing if none
@@ -38,9 +38,6 @@ def accept_cons():
 		lock.acquire()
 		conns.clients[conn] = addr
 		lock.release()
-
-def send(sender, reciever, msg):
-	reciever.send(sender + ": " + msg)
 
 def msg_control():
 	while True:
@@ -55,7 +52,7 @@ def msg_control():
 				#remove the client from the dict
 				print "disconnecting client"
 				for person in conns.clients.keys():
-					send(conns.SERVER_STR, person, conns.clients.get(con)[0] + " Disconnected")
+					conns.send(conns.SERVER_STR, person, conns.clients.get(con)[0] + " Disconnected")
 				con.close()
 				del conns.clients[con]
 				#do not want to broadcast the /dc command so continue
@@ -65,7 +62,7 @@ def msg_control():
 				if person == con:
 					#do not send the message back to the sender
 					continue
-				send(conns.clients.get(con)[0], person, msg)
+				conns.send(conns.clients.get(con)[0], person, msg)
 			
 		lock.release()
 
