@@ -13,3 +13,21 @@ def parse_msg(msg):
 	else:
 		msg = strings[-1:]
 	print strings[:commands.get(cmd)-1], msg
+
+def server_dc(msg):
+	pass
+
+def client_dc(msg):
+	pass
+
+def stop(passwd):
+	pass
+
+def join(room):
+	pass
+
+def leave(room):
+	pass
+
+def to(room, msg):
+	pass
