@@ -5,7 +5,9 @@ commands = 	{'/dc':1,   #disconnect client from server,	/dc {reason/msg}
 			'/stop':1,  #tell server to stop running,		/stop {passwd}
 			'/join':1,  #join given channel,				/join {channel}
 			'/leave':1, #leave given channel,				/leave {channel}
-			'/to':2}    #send to given channel, 			/to {channel} {msg}
+			'/to':2,    #send to given channel, 			/to {channel} {msg}
+			'/setnick':1}
+
 hasMsg = ['/dc', '/to']
 
 def parse_msg(msg, con):
@@ -28,11 +30,11 @@ def parse_msg(msg, con):
 		for person in conns.clients.keys():
 			if person == con:
 				continue
-			conns.send(conns.nicks.get(con)[0], person, msg)
+			conns.send(conns.nicks.get(con), person, msg)
 
 def server_dc(msg, con):
 	print "disconnecting client"
-	broadcast_all(conns.SERVER_STR, conns.nicks.get(con)[0] + " Disconnected")
+	broadcast_all(conns.SERVER_STR, conns.nicks.get(con) + " Disconnected")
 	con.close()
 	del conns.clients[con]
 
