@@ -40,8 +40,11 @@ def accept_cons():
 		if conns.FLAG:
 			break
 		sleep(0.05)
-		conns.sock.listen(1)
-		conn, addr = conns.sock.accept()
+		try:
+			conns.sock.listen(1)
+			conn, addr = conns.sock.accept()
+		except:
+			continue
 		print "Connected to ", addr
 		conns.send(conns.SERVER_STR, conn, "Welcome")
 
