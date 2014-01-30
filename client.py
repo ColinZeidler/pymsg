@@ -28,8 +28,7 @@ def send(msg):
 	conns.sock.send(msg)
 	if msg[:3] == "/dc":
 		conns.sock.close()
-		sys.exit(0) #should find a better way to quit...
-	pass
+		conns.FLAG = True
 
 def listen():
 	while not conns.FLAG:
