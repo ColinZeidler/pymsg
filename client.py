@@ -39,5 +39,11 @@ def listen():
 		print msg
 
 if __name__ == "__main__":
+	if len(sys.argv) >= 2:
+		HOST = sys.argv[1]
+	else:
+		HOST = raw_input("server address: ")
+		if HOST == "":
+			HOST = "localhost"
 	#do the normal stuff
 	main()
