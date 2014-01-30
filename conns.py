@@ -6,6 +6,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 HOST = ''
 PORT = 60000
 
+FLAG = False
 SERVER_STR = "Server"
 PASS = "goaway"
 
