@@ -7,7 +7,6 @@ import conns
 HOST = 'localhost'
 
 def main():
-	print "Hello world"
 	connect(HOST)
 	print conns.sock.getsockname()
 	Thread(target=listen).start()
