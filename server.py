@@ -49,11 +49,11 @@ def accept_cons():
 		conns.send(conns.SERVER_STR, conn, "Welcome")
 
 		conn.setblocking(0) #set the socket to non blocking
-		#should allow checking for data, and continuing if none
 		#preventing concurrent access
 		lock.acquire()
 		conns.clients[conn] = addr
 		conns.nicks[conn] = addr[0]
+		messages.broadcast_all(conns.SERVER_STR, conns.nicks.get(conn) + " connected")
 		lock.release()
 	print "done listening for conns"
 

@@ -53,8 +53,10 @@ def to(room, msg):
 	pass
 
 def set_nick(name, con):
+	prevName = conns.nicks.get(con)
 	conns.nicks[con] = name
 	print "set nickname to:", name
+	broadcast_all(conns.SERVER_STR, prevName + " changed name to " + name) 
 
 
 def broadcast_all(sender, msg):
