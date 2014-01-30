@@ -13,12 +13,17 @@ def main():
 	Thread(target=msg_control).start()
 	
 	while True:
+		if conns.FLAG:
+			break
 		sleep(2)
 		lock.acquire()
 		print "clients ",
 		print conns.clients.values()
 		lock.release()
 
+	for person in conns.clients.keys():
+		person.close()
+	conns.sock.close()
 	#end of server
 	print "Server closed"
 	
@@ -29,8 +34,12 @@ def accept_cons():
 		conns.sock.bind((conns.HOST, conns.PORT))
 	except:
 		print "Unable to bind socket"
-		sys.exit(0)
+		conns.FLAG = True
+	conns.sock.setblocking(0)
 	while True: #change this so that the program can exit cleanly
+		if conns.FLAG:
+			break
+		sleep(0.05)
 		conns.sock.listen(1)
 		conn, addr = conns.sock.accept()
 		print "Connected to ", addr
@@ -43,9 +52,12 @@ def accept_cons():
 		conns.clients[conn] = addr
 		conns.nicks[conn] = addr[0]
 		lock.release()
+	print "done listening for conns"
 
 def msg_control():
 	while True:
+		if conns.FLAG:
+			break
 		sleep(0.05)
 		lock.acquire()
 		for con in conns.clients.keys():
@@ -55,6 +67,7 @@ def msg_control():
 				continue
 			messages.parse_msg(msg, con)
 		lock.release()
+	print "done listening for msgs"
 
 if __name__ == '__main__':
 	#do the normal stuff
