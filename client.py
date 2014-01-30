@@ -11,10 +11,11 @@ def main():
 	connect(HOST)
 	print conns.sock.getsockname()
 	Thread(target=listen).start()
-	while True:
+	while not conns.FLAG:
 		msg = raw_input()
-		send(msg)
-		pass
+		if not conns.FLAG:
+			send(msg)
+	conns.sock.close()
 
 def connect(server):
 	conns.sock.connect((server, conns.PORT))
@@ -31,12 +32,14 @@ def send(msg):
 	pass
 
 def listen():
-	while True:
+	while not conns.FLAG:
 		msg = conns.sock.recv(128)
 		if msg[:3] == "/dc":
 			conns.sock.close()
-			sys.exit(0)
-		print msg
+			conns.FLAG = True
+			print "Server offline, press enter to exit"
+		else:
+			print msg
 
 if __name__ == "__main__":
 	if len(sys.argv) >= 2:
