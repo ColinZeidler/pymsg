@@ -41,8 +41,7 @@ def server_dc(msg, con):
 def stop(passwd):
 	if passwd == conns.PASS:
 		broadcast_all("/dc ", "")
-		conns.sock.close()
-		sys.exit(0)
+		conns.FLAG = True
 
 def join(room):
 	pass
