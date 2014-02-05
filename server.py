@@ -2,7 +2,7 @@
 from time import sleep
 from threading import Thread, Lock
 import socket, sys
-import conns, messages
+import conns, messages, User, Room
 
 def main():
 	print "Starting server"
@@ -51,8 +51,11 @@ def accept_cons():
 		conn.setblocking(0) #set the socket to non blocking
 		#preventing concurrent access
 		lock.acquire()
-		conns.clients[conn] = addr
-		conns.nicks[conn] = addr[0]
+#this needs to be continued
+		conns.clients.append(User(conn, addr))
+#		conns.clients[conn] = addr
+#		conns.nicks[conn] = addr[0]
+
 		messages.broadcast_all(conns.SERVER_STR, conns.nicks.get(conn) + " connected")
 		lock.release()
 	print "done listening for conns"

@@ -10,8 +10,9 @@ FLAG = False
 SERVER_STR = "Server"
 PASS = "goaway"
 
-clients = {}
-nicks   = {}
+clients	= []
+rooms 	= [Room("root")]
+#nicks   = {}
 
 def send(sender, receiver, msg):
 	receiver.send(sender + ": " + msg)
