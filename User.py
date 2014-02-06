@@ -1,4 +1,3 @@
-
 class User:
 	"""Class that defines a single client connection
 	to the server. allows easier access to a clients 
@@ -21,8 +20,16 @@ class User:
 			return True
 		return False
 
+	#leave a given room
+	def leave_room(self, room):
+		if room in self.rooms:
+			self.rooms.remove(room)
+			room.remove_user(self)
+			return True
+		return False
+
 	#send a message to all rooms client is connected to
 	#accepts: message to send
 	def send_message(self, msg):
-		for room in rooms:
+		for room in self.rooms:
 			room.send_message(self.name, msg)
