@@ -1,5 +1,6 @@
 import conns
 import socket, sys
+from Room import Room
 
 commands = 	{'/dc':1,   #disconnect client from server,	/dc {reason/msg}
 			'/stop':1,  #tell server to stop running,		/stop {passwd}
@@ -18,23 +19,20 @@ def parse_msg(msg, con):
 			server_dc(" ".join(strings[commands.get(cmd):]), con)
 		elif cmd == "/stop":
 			stop(strings[1])
-		elif cmd == "/join":
-			join(strings[1])
-		elif cmd == "/leave":
-			leave(strings[1])
-		elif cmd == "/setnick":
+		elif cmd == "/join": #the user is joining a room
+			join(strings[1], con)
+		elif cmd == "/leave": #the user is leaving a room
+			leave(strings[1], con)
+		elif cmd == "/setnick": #the user is changing their screen name
 			set_nick(strings[1], con)
 		elif cmd == "/to":
 			pass
 	else: #msg does not contain a command
-		for person in conns.clients.keys():
-			if person == con:
-				continue
-			conns.send(conns.nicks.get(con), person, msg)
+		conns.clients.get(con).send_message(msg)
 
 def server_dc(msg, con):
 	print "disconnecting client"
-	broadcast_all(conns.SERVER_STR, conns.nicks.get(con) + " Disconnected")
+	broadcast_all(conns.SERVER_STR, conns.clients.get(con).name + " Disconnected")
 	con.close()
 	del conns.clients[con]
 
@@ -43,18 +41,30 @@ def stop(passwd):
 		broadcast_all("/dc ", "")
 		conns.FLAG = True
 
-def join(room):
+def join(room, con):
+	user = conns.clients.get(con)
+	if room in conns.rooms:
+		chan = conns.rooms.get(room)
+	else:
+		chan = Room(room)
+		conns.rooms[room] = chan
+	user.join_room(chan)
 	pass
 
-def leave(room):
-	pass
+def leave(room, con):
+	user = conns.clients.get(con)
+	if room in conns.rooms:
+		chan = conns.rooms.get(room)
+	else:
+		return
+	user.leave_room(chan)
 
 def to(room, msg):
 	pass
 
 def set_nick(name, con):
-	prevName = conns.nicks.get(con)
-	conns.nicks[con] = name
+	prevName = conns.clients.get(con).name
+	conns.clients.get(con).name = name
 	print "set nickname to:", name
 	broadcast_all(conns.SERVER_STR, prevName + " changed name to " + name) 
 
