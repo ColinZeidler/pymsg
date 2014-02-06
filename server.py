@@ -1,8 +1,10 @@
 #author Colin Zeidler
+from User import User
+from Room import Room
 from time import sleep
 from threading import Thread, Lock
 import socket, sys
-import conns, messages, User, Room
+import conns, messages
 
 def main():
 	print "Starting server"
@@ -12,13 +14,11 @@ def main():
 	Thread(target=accept_cons).start()
 	Thread(target=msg_control).start()
 	
-	while True:
-		if conns.FLAG:
-			break
+	while not conns.FLAG:
 		sleep(2)
 		lock.acquire()
 		print "clients ",
-		print conns.clients.values()
+		print len(conns.clients.values())
 		lock.release()
 
 	for person in conns.clients.keys():
@@ -36,9 +36,7 @@ def accept_cons():
 		print "Unable to bind socket"
 		conns.FLAG = True
 	conns.sock.setblocking(0)
-	while True: #change this so that the program can exit cleanly
-		if conns.FLAG:
-			break
+	while not conns.FLAG: #change this so that the program can exit cleanly
 		sleep(0.05)
 		try:
 			conns.sock.listen(1)
@@ -51,26 +49,25 @@ def accept_cons():
 		conn.setblocking(0) #set the socket to non blocking
 		#preventing concurrent access
 		lock.acquire()
-#this needs to be continued
-		conns.clients.append(User(conn, addr))
-#		conns.clients[conn] = addr
-#		conns.nicks[conn] = addr[0]
-
-		messages.broadcast_all(conns.SERVER_STR, conns.nicks.get(conn) + " connected")
+		conns.clients[conn] = User(conn, addr)
+		#notify all users that some one has joined
+		messages.broadcast_all(conns.SERVER_STR, 
+			conns.clients.get(conn).name + " connected")
 		lock.release()
 	print "done listening for conns"
 
 def msg_control():
-	while True:
-		if conns.FLAG:
-			break
+	while not conns.FLAG:
 		sleep(0.05)
 		lock.acquire()
+		#loop over every connected client
 		for con in conns.clients.keys():
+			#check if there is a message from the current client
 			try:
 				msg = con.recv(128)
 			except:
 				continue
+			#send the message to the message parser
 			messages.parse_msg(msg, con)
 		lock.release()
 	print "done listening for msgs"
